@@ -13,92 +13,7 @@ include "koneksi.php";
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    
-    <!-- Style untuk Chatbot -->
-    <style>
-        /* Floating Action Button */
-        #chatFloatingBtn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            cursor: pointer;
-            z-index: 1000;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-        }
-
-        #chatFloatingBtn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-        }
-
-        /* Chat Container */
-        #chatbotContainer {
-            position: fixed;
-            bottom: 100px;
-            right: 30px;
-            width: 380px;
-            max-width: calc(100vw - 60px);
-            z-index: 999;
-            display: none;
-            animation: slideUp 0.3s ease;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Responsive untuk mobile */
-        @media (max-width: 576px) {
-            #chatbotContainer {
-                width: calc(100vw - 40px);
-                right: 20px;
-                bottom: 90px;
-            }
-            
-            #chatFloatingBtn {
-                bottom: 20px;
-                right: 20px;
-                width: 55px;
-                height: 55px;
-            }
-        }
-
-        /* Custom scrollbar untuk chat body */
-        #chatbotBody::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        #chatbotBody::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        #chatbotBody::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 3px;
-        }
-
-        #chatbotBody::-webkit-scrollbar-thumb:hover {
-            background: #555;
-        }
-    </style>
+    <link rel="stylesheet" href="app.css">
 </head>
 
 <body>
@@ -438,57 +353,68 @@ include "koneksi.php";
     
     <!-- Floating Action Button untuk Chatbot -->
     <button id="chatFloatingBtn" title="Chat dengan Assistant">
-        <i class="bi bi-chat-dots-fill"></i>
+        <img src="assets/images/chatbot/logo.png" alt="Chatbot">
     </button>
 
     <!-- Chat Box Container -->
-    <div id="chatbotContainer" class="card shadow-lg">
+    <div id="chatbotContainer" class="shadow-lg">
         <!-- Chat Header -->
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <div>
-                <i class="bi bi-robot me-2"></i>
-                <strong>Daily Journal Assistant</strong>
+        <div class="chat-header-custom d-flex justify-content-between align-items-center">
+            <div class="chat-header-main">
+                <div class="chat-header-logo">
+                    <img src="assets/images/chatbot/logo.png" alt="Bot Logo">
+                </div>
+                <div class="chat-header-title">
+                    <span class="chat-header-name">Daily Journal Assistant</span>
+                    <span class="chat-header-status">
+                        <span class="chat-header-status-dot"></span>
+                        Online
+                    </span>
+                </div>
             </div>
-            <button id="closeChatbotBtn" class="btn btn-sm btn-light">
-                <i class="bi bi-x-lg"></i>
-            </button>
+            <div class="chat-header-menu" id="closeChatbotBtn">
+                <i class="bi bi-chevron-down"></i>
+            </div>
         </div>
 
         <!-- Chat Body -->
-        <div class="card-body" id="chatbotBody" style="height: 350px; overflow-y: auto; background-color: #f8f9fa;">
+        <div id="chatbotBody" style="height: 400px; overflow-y: auto;">
             <!-- Pesan selamat datang -->
-            <div class="d-flex mb-3">
-                <div class="flex-shrink-0">
-                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
-                        style="width: 35px; height: 35px;">
-                        <i class="bi bi-robot"></i>
-                    </div>
+            <div class="d-flex mb-3 align-items-end">
+                <div class="chat-avatar chat-avatar-bot me-2">
+                    <img src="assets/images/chatbot/logo.png" alt="Bot" class="chat-avatar-img">
                 </div>
-                <div class="flex-grow-1 ms-2">
-                    <div class="bg-white p-2 rounded shadow-sm">
-                        <p class="mb-0 small">Halo! Saya Daily Journal Assistant. Ada yang bisa saya bantu?</p>
-                        <small class="text-muted" style="font-size: 0.7rem;">Baru saja</small>
+                <div>
+                    <div class="chat-message-bot">
+                        <div style="line-height: 1.7;">
+                            Halo! 👋 Saya <strong>Daily Journal Assistant</strong>.
+                            <br><br>
+                            Ada yang bisa saya bantu hari ini?
+                        </div>
                     </div>
+                    <small class="chat-timestamp text-muted">Baru saja</small>
                 </div>
             </div>
         </div>
 
         <!-- Chat Footer -->
-        <div class="card-footer bg-white p-2">
-            <div class="input-group input-group-sm">
+        <div class="chat-input-wrapper">
+            <div class="input-group">
                 <input type="text" id="chatbotInput" class="form-control" 
-                    placeholder="Ketik pesan..." 
+                    placeholder="Ketik pesan Anda..." 
                     aria-label="User message">
-                <button class="btn btn-primary" type="button" id="sendChatBtn">
+                <button class="btn" type="button" id="sendChatBtn">
                     <i class="bi bi-send-fill"></i>
                 </button>
             </div>
             <!-- Loading indicator -->
             <div id="chatbotLoading" class="text-center mt-2" style="display: none;">
-                <div class="spinner-border spinner-border-sm text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
+                <div class="typing-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
                 </div>
-                <small class="text-muted ms-2">Bot sedang mengetik...</small>
+                <small class="text-muted ms-2">Assistant sedang mengetik...</small>
             </div>
         </div>
     </div>
@@ -568,8 +494,8 @@ include "koneksi.php";
         // ========================================
         
         // KONFIGURASI WEBHOOK N8N
-        // Ganti URL ini dengan webhook URL dari N8n Anda
-        const WEBHOOK_URL = 'https://your-n8n-webhook-url.com/webhook/chatbot';
+        // Webhook n8n lokal
+        const WEBHOOK_URL = 'http://localhost:5678/webhook/d0d60e60-b900-40c2-ac83-adc2e519da86/chat';
 
         // Elemen DOM Chatbot
         const chatFloatingBtn = document.getElementById('chatFloatingBtn');
@@ -629,18 +555,15 @@ include "koneksi.php";
         // Fungsi menampilkan pesan user
         function displayChatUserMessage(message) {
             const messageHtml = `
-                <div class="d-flex mb-3 justify-content-end">
-                    <div class="flex-grow-1 me-2 text-end">
-                        <div class="bg-primary text-white p-2 rounded shadow-sm d-inline-block" style="max-width: 75%;">
-                            <p class="mb-0 small">${escapeHtmlChat(message)}</p>
-                            <small class="text-white-50" style="font-size: 0.7rem;">${getCurrentTimeChat()}</small>
+                <div class="d-flex mb-3 justify-content-end align-items-end">
+                    <div class="me-2 text-end">
+                        <div class="chat-message-user">
+                            <div>${escapeHtmlChat(message)}</div>
                         </div>
+                        <small class="chat-timestamp">${getCurrentTimeChat()}</small>
                     </div>
-                    <div class="flex-shrink-0">
-                        <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center"
-                            style="width: 35px; height: 35px;">
-                            <i class="bi bi-person-fill"></i>
-                        </div>
+                    <div class="chat-avatar chat-avatar-user">
+                        <i class="bi bi-person-fill"></i>
                     </div>
                 </div>
             `;
@@ -649,21 +572,21 @@ include "koneksi.php";
             scrollChatToBottom();
         }
 
-        // Fungsi menampilkan pesan bot
+        // Fungsi menampilkan pesan bot dengan format yang lebih baik
         function displayChatBotMessage(message) {
+            // Format pesan untuk tampilan yang lebih baik
+            const formattedMessage = formatBotMessage(message);
+            
             const messageHtml = `
-                <div class="d-flex mb-3">
-                    <div class="flex-shrink-0">
-                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
-                            style="width: 35px; height: 35px;">
-                            <i class="bi bi-robot"></i>
-                        </div>
+                <div class="d-flex mb-3 align-items-end">
+                    <div class="chat-avatar chat-avatar-bot me-2">
+                        <i class="bi bi-robot"></i>
                     </div>
-                    <div class="flex-grow-1 ms-2">
-                        <div class="bg-white p-2 rounded shadow-sm" style="max-width: 75%;">
-                            <p class="mb-0 small">${escapeHtmlChat(message)}</p>
-                            <small class="text-muted" style="font-size: 0.7rem;">${getCurrentTimeChat()}</small>
+                    <div>
+                        <div class="chat-message-bot">
+                            ${formattedMessage}
                         </div>
+                        <small class="chat-timestamp text-muted">${getCurrentTimeChat()}</small>
                     </div>
                 </div>
             `;
@@ -672,41 +595,185 @@ include "koneksi.php";
             scrollChatToBottom();
         }
 
-        // Fungsi kirim ke N8n webhook
+        // Fungsi untuk memformat pesan bot agar lebih rapi
+        function formatBotMessage(message) {
+            if (!message) return '';
+            
+            // Escape HTML dulu untuk keamanan
+            let formatted = escapeHtmlChat(message);
+            
+            // Support untuk bold text dengan **text**
+            formatted = formatted.replace(/\*\*([^\*\n]+?)\*\*/g, '<strong>$1</strong>');
+            
+            // Support untuk italic dengan *text* (hindari conflict dengan bold)
+            formatted = formatted.replace(/(?<!\*)\*([^\*\n]+?)\*(?!\*)/g, '<em>$1</em>');
+            
+            // Process line by line untuk handle lists dan paragraf
+            let lines = formatted.split('\n');
+            let html = [];
+            let currentParagraph = [];
+            let inList = false;
+            let listItems = [];
+            let listType = '';
+            
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i].trim();
+                
+                // Deteksi bullet point list (-, •, *)
+                let bulletMatch = line.match(/^[\-\•]\s+(.+)$/);
+                // Deteksi numbered list (1., 2., dll)
+                let numberMatch = line.match(/^(\d+)\.\s+(.+)$/);
+                
+                if (bulletMatch) {
+                    // Tutup paragraph sebelumnya jika ada
+                    if (currentParagraph.length > 0) {
+                        html.push('<div style="margin-bottom: 0.8em; line-height: 1.7;">' + currentParagraph.join(' ') + '</div>');
+                        currentParagraph = [];
+                    }
+                    
+                    // Mulai atau lanjutkan list
+                    if (!inList || listType !== 'ul') {
+                        if (inList) {
+                            // Tutup list sebelumnya
+                            html.push(wrapListItems(listItems, listType));
+                            listItems = [];
+                        }
+                        inList = true;
+                        listType = 'ul';
+                    }
+                    listItems.push(bulletMatch[1]);
+                    
+                } else if (numberMatch) {
+                    // Tutup paragraph sebelumnya jika ada
+                    if (currentParagraph.length > 0) {
+                        html.push('<div style="margin-bottom: 0.8em; line-height: 1.7;">' + currentParagraph.join(' ') + '</div>');
+                        currentParagraph = [];
+                    }
+                    
+                    // Mulai atau lanjutkan list
+                    if (!inList || listType !== 'ol') {
+                        if (inList) {
+                            html.push(wrapListItems(listItems, listType));
+                            listItems = [];
+                        }
+                        inList = true;
+                        listType = 'ol';
+                    }
+                    listItems.push(numberMatch[2]);
+                    
+                } else {
+                    // Tutup list jika ada
+                    if (inList) {
+                        html.push(wrapListItems(listItems, listType));
+                        listItems = [];
+                        inList = false;
+                        listType = '';
+                    }
+                    
+                    // Handle paragraf normal
+                    if (line === '') {
+                        // Empty line = paragraph break
+                        if (currentParagraph.length > 0) {
+                            html.push('<div style="margin-bottom: 0.8em; line-height: 1.7;">' + currentParagraph.join(' ') + '</div>');
+                            currentParagraph = [];
+                        }
+                    } else {
+                        // Tambahkan ke current paragraph
+                        currentParagraph.push(line);
+                    }
+                }
+            }
+            
+            // Tutup paragraph atau list terakhir
+            if (inList && listItems.length > 0) {
+                html.push(wrapListItems(listItems, listType));
+            } else if (currentParagraph.length > 0) {
+                html.push('<div style="margin-bottom: 0; line-height: 1.7;">' + currentParagraph.join(' ') + '</div>');
+            }
+            
+            return html.join('');
+        }
+        
+        // Helper function untuk wrap list items
+        function wrapListItems(items, type) {
+            if (items.length === 0) return '';
+            
+            const tag = type === 'ul' ? 'ul' : 'ol';
+            const style = 'margin: 0.5em 0 0.8em 0; padding-left: 1.5em; line-height: 1.7;';
+            
+            let listHtml = `<${tag} style="${style}">`;
+            items.forEach(item => {
+                listHtml += `<li style="margin: 0.3em 0;">${item}</li>`;
+            });
+            listHtml += `</${tag}>`;
+            
+            return listHtml;
+        }
+
+        // Fungsi kirim ke N8n webhook (ASYNC / AWAIT + ERROR HANDLING)
         async function sendToN8nWebhook(message) {
+            // Payload sesuai spesifikasi - format untuk n8n chat
+            const payload = {
+                chatInput: String(message),
+                message: String(message),
+                input: String(message),
+                sessionId: 'daily-journal-session-' + Date.now(),
+                timestamp: new Date().toISOString(),
+                source: 'daily-journal-chatbot'
+            };
+
             try {
                 const response = await fetch(WEBHOOK_URL, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({
-                        message: message,
-                        timestamp: new Date().toISOString(),
-                        source: 'daily-journal-chatbot',
-                        page: 'index'
-                    })
+                    body: JSON.stringify(payload)
                 });
 
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                // Coba parse JSON, tapi jangan crash kalau JSON tidak valid / kosong
+                let data = null;
+                try {
+                    data = await response.json();
+                } catch (parseError) {
+                    console.warn('Response bukan JSON yang valid atau kosong:', parseError);
                 }
 
-                const data = await response.json();
-                
-                // Sembunyikan loading
-                chatbotLoading.style.display = 'none';
+                // Jika HTTP status bukan 2xx, anggap error
+                if (!response.ok) {
+                    const serverMessage =
+                        data && (data.error || data.reply || data.message);
 
-                // Tampilkan response dari bot
-                const botReply = data.reply || data.message || 'Maaf, saya tidak mengerti.';
-                displayChatBotMessage(botReply);
+                    const friendlyError =
+                        serverMessage && typeof serverMessage === 'string'
+                            ? serverMessage
+                            : 'Maaf, terjadi kesalahan di server. Silakan coba lagi nanti.';
 
+                    displayChatBotMessage(friendlyError);
+                    return;
+                }
+
+                // Ambil reply dari field "output", "reply" atau "message"
+                const botReply =
+                    data && (data.output || data.reply || data.message);
+
+                if (botReply && typeof botReply === 'string' && botReply.trim() !== '') {
+                    displayChatBotMessage(botReply);
+                } else {
+                    displayChatBotMessage(
+                        'Maaf, saya tidak menerima jawaban yang bisa dipahami dari server.'
+                    );
+                }
             } catch (error) {
-                console.error('Error:', error);
-                chatbotLoading.style.display = 'none';
-                
-                // Tampilkan pesan error
-                displayChatBotMessage('Maaf, terjadi kesalahan koneksi. Silakan coba lagi nanti.');
+                console.error('Error saat menghubungi webhook N8N:', error);
+                displayChatBotMessage(
+                    'Maaf, terjadi masalah koneksi. Pastikan server N8N berjalan lalu coba lagi.'
+                );
+            } finally {
+                // Pastikan loading selalu disembunyikan, apapun hasilnya
+                if (typeof chatbotLoading !== 'undefined' && chatbotLoading) {
+                    chatbotLoading.style.display = 'none';
+                }
             }
         }
 
