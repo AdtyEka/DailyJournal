@@ -13,6 +13,92 @@ include "koneksi.php";
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    
+    <!-- Style untuk Chatbot -->
+    <style>
+        /* Floating Action Button */
+        #chatFloatingBtn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        #chatFloatingBtn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Chat Container */
+        #chatbotContainer {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 380px;
+            max-width: calc(100vw - 60px);
+            z-index: 999;
+            display: none;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive untuk mobile */
+        @media (max-width: 576px) {
+            #chatbotContainer {
+                width: calc(100vw - 40px);
+                right: 20px;
+                bottom: 90px;
+            }
+            
+            #chatFloatingBtn {
+                bottom: 20px;
+                right: 20px;
+                width: 55px;
+                height: 55px;
+            }
+        }
+
+        /* Custom scrollbar untuk chat body */
+        #chatbotBody::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #chatbotBody::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        #chatbotBody::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+
+        #chatbotBody::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
 </head>
 
 <body>
@@ -349,6 +435,65 @@ include "koneksi.php";
         </div>
     </footer>
     <!-- footer end -->
+    
+    <!-- Floating Action Button untuk Chatbot -->
+    <button id="chatFloatingBtn" title="Chat dengan Assistant">
+        <i class="bi bi-chat-dots-fill"></i>
+    </button>
+
+    <!-- Chat Box Container -->
+    <div id="chatbotContainer" class="card shadow-lg">
+        <!-- Chat Header -->
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <div>
+                <i class="bi bi-robot me-2"></i>
+                <strong>Daily Journal Assistant</strong>
+            </div>
+            <button id="closeChatbotBtn" class="btn btn-sm btn-light">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <!-- Chat Body -->
+        <div class="card-body" id="chatbotBody" style="height: 350px; overflow-y: auto; background-color: #f8f9fa;">
+            <!-- Pesan selamat datang -->
+            <div class="d-flex mb-3">
+                <div class="flex-shrink-0">
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
+                        style="width: 35px; height: 35px;">
+                        <i class="bi bi-robot"></i>
+                    </div>
+                </div>
+                <div class="flex-grow-1 ms-2">
+                    <div class="bg-white p-2 rounded shadow-sm">
+                        <p class="mb-0 small">Halo! Saya Daily Journal Assistant. Ada yang bisa saya bantu?</p>
+                        <small class="text-muted" style="font-size: 0.7rem;">Baru saja</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Footer -->
+        <div class="card-footer bg-white p-2">
+            <div class="input-group input-group-sm">
+                <input type="text" id="chatbotInput" class="form-control" 
+                    placeholder="Ketik pesan..." 
+                    aria-label="User message">
+                <button class="btn btn-primary" type="button" id="sendChatBtn">
+                    <i class="bi bi-send-fill"></i>
+                </button>
+            </div>
+            <!-- Loading indicator -->
+            <div id="chatbotLoading" class="text-center mt-2" style="display: none;">
+                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <small class="text-muted ms-2">Bot sedang mengetik...</small>
+            </div>
+        </div>
+    </div>
+    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous">
         </script>
@@ -417,7 +562,176 @@ include "koneksi.php";
                 icon.classList.replace("text-white", "text-dark")
             );
         };
+
+        // ========================================
+        // CHATBOT FUNCTIONALITY
+        // ========================================
+        
+        // KONFIGURASI WEBHOOK N8N
+        // Ganti URL ini dengan webhook URL dari N8n Anda
+        const WEBHOOK_URL = 'https://your-n8n-webhook-url.com/webhook/chatbot';
+
+        // Elemen DOM Chatbot
+        const chatFloatingBtn = document.getElementById('chatFloatingBtn');
+        const chatbotContainer = document.getElementById('chatbotContainer');
+        const closeChatbotBtn = document.getElementById('closeChatbotBtn');
+        const chatbotBody = document.getElementById('chatbotBody');
+        const chatbotInput = document.getElementById('chatbotInput');
+        const sendChatBtn = document.getElementById('sendChatBtn');
+        const chatbotLoading = document.getElementById('chatbotLoading');
+
+        // Event Listeners untuk Chatbot
+        
+        // Buka chat box ketika floating button diklik
+        chatFloatingBtn.addEventListener('click', function() {
+            chatbotContainer.style.display = 'block';
+            chatbotInput.focus();
+        });
+
+        // Tutup chat box
+        closeChatbotBtn.addEventListener('click', function() {
+            chatbotContainer.style.display = 'none';
+        });
+
+        // Kirim pesan dengan tombol
+        sendChatBtn.addEventListener('click', function() {
+            sendChatMessage();
+        });
+
+        // Kirim pesan dengan Enter
+        chatbotInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendChatMessage();
+            }
+        });
+
+        // Fungsi untuk mengirim pesan
+        function sendChatMessage() {
+            const message = chatbotInput.value.trim();
+            
+            if (message === '') {
+                return;
+            }
+
+            // Tampilkan pesan user
+            displayChatUserMessage(message);
+            
+            // Kosongkan input
+            chatbotInput.value = '';
+            
+            // Tampilkan loading
+            chatbotLoading.style.display = 'block';
+            
+            // Kirim ke webhook
+            sendToN8nWebhook(message);
+        }
+
+        // Fungsi menampilkan pesan user
+        function displayChatUserMessage(message) {
+            const messageHtml = `
+                <div class="d-flex mb-3 justify-content-end">
+                    <div class="flex-grow-1 me-2 text-end">
+                        <div class="bg-primary text-white p-2 rounded shadow-sm d-inline-block" style="max-width: 75%;">
+                            <p class="mb-0 small">${escapeHtmlChat(message)}</p>
+                            <small class="text-white-50" style="font-size: 0.7rem;">${getCurrentTimeChat()}</small>
+                        </div>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center"
+                            style="width: 35px; height: 35px;">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            chatbotBody.insertAdjacentHTML('beforeend', messageHtml);
+            scrollChatToBottom();
+        }
+
+        // Fungsi menampilkan pesan bot
+        function displayChatBotMessage(message) {
+            const messageHtml = `
+                <div class="d-flex mb-3">
+                    <div class="flex-shrink-0">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
+                            style="width: 35px; height: 35px;">
+                            <i class="bi bi-robot"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-2">
+                        <div class="bg-white p-2 rounded shadow-sm" style="max-width: 75%;">
+                            <p class="mb-0 small">${escapeHtmlChat(message)}</p>
+                            <small class="text-muted" style="font-size: 0.7rem;">${getCurrentTimeChat()}</small>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            chatbotBody.insertAdjacentHTML('beforeend', messageHtml);
+            scrollChatToBottom();
+        }
+
+        // Fungsi kirim ke N8n webhook
+        async function sendToN8nWebhook(message) {
+            try {
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        timestamp: new Date().toISOString(),
+                        source: 'daily-journal-chatbot',
+                        page: 'index'
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+                
+                // Sembunyikan loading
+                chatbotLoading.style.display = 'none';
+
+                // Tampilkan response dari bot
+                const botReply = data.reply || data.message || 'Maaf, saya tidak mengerti.';
+                displayChatBotMessage(botReply);
+
+            } catch (error) {
+                console.error('Error:', error);
+                chatbotLoading.style.display = 'none';
+                
+                // Tampilkan pesan error
+                displayChatBotMessage('Maaf, terjadi kesalahan koneksi. Silakan coba lagi nanti.');
+            }
+        }
+
+        // Fungsi helper
+        function scrollChatToBottom() {
+            chatbotBody.scrollTop = chatbotBody.scrollHeight;
+        }
+
+        function getCurrentTimeChat() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            return `${hours}:${minutes}`;
+        }
+
+        function escapeHtmlChat(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
     </script>
 </body>
-
 </html>
